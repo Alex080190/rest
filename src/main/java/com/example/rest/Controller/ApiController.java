@@ -48,22 +48,22 @@ public class ApiController {
 
         return objectMapper.writeValueAsString(user);
     }
-    @GetMapping("/get/random")
-    public String getRandomString() throws IOException, SQLException {
-
-        Random random = new Random();
-        String readedString;
-
-        try(Stream<String> lines = Files.lines(Paths.get("users.csv"))) {
-            int countLines = (int) Files.lines(Paths.get("users.csv")).count();
-            if (countLines == 0) {
-                return "file is empty";
-            }
-            int randomString = random.nextInt(1, countLines + 1);
-            readedString = lines.skip(randomString - 1).findFirst().get();
-        }
-        return readedString;
-    }
+//    @GetMapping("/get/random")
+//    public String getRandomString() throws IOException, SQLException {
+//
+//        Random random = new Random();
+//        String readedString;
+//
+//        try(Stream<String> lines = Files.lines(Paths.get("users.csv"))) {
+//            int countLines = (int) Files.lines(Paths.get("users.csv")).count();
+//            if (countLines == 0) {
+//                return "file is empty";
+//            }
+//            int randomString = random.nextInt(1, countLines + 1);
+//            readedString = lines.skip(randomString - 1).findFirst().get();
+//        }
+//        return readedString;
+//    }
 
     @PostMapping("/post")
     public String getData(@RequestBody User receivedUser) throws JsonProcessingException {
