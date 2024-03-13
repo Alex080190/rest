@@ -8,26 +8,63 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Random;
+import java.util.stream.Stream;
 
 @RestController
 public class ApiController {
 
 
     @GetMapping("/get")
-    public String getPage(@RequestParam String login) throws JsonProcessingException, SQLException {
+    public String getPage(@RequestParam String login) throws IOException, SQLException {
         ObjectMapper objectMapper = new ObjectMapper();
         ClientDBFunctions userFromDB = new ClientDBFunctions();
 
         User user = userFromDB.getUserByLogin(login);
-        System.out.println(user);
         if (user == null) {
             return "No such login in DB \n" + new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+
+        File file = new File("users.csv");
+        FileWriter writer = new FileWriter(file, true);
+
+//        if (file.length() == 0) {
+//            String firstLine = "login,password,date,email\n";
+//            writer.write(firstLine);
+//        }
+
+        String stringToWrite = user.getLogin() + "," + user.getPassword() + "," + user.getDate() + "," + user.getEmail() + "\n";
+        writer.write(stringToWrite);
+        writer.flush();
+        writer.close();
+
         return objectMapper.writeValueAsString(user);
     }
+    @GetMapping("/get/random")
+    public String getRandomString() throws IOException, SQLException {
+
+        Random random = new Random();
+        String readedString;
+
+        try(Stream<String> lines = Files.lines(Paths.get("users.csv"))) {
+            int countLines = (int) Files.lines(Paths.get("users.csv")).count();
+            if (countLines == 0) {
+                return "file is empty";
+            }
+            int randomString = random.nextInt(1, countLines + 1);
+            readedString = lines.skip(randomString - 1).findFirst().get();
+        }
+        return readedString;
+    }
+
     @PostMapping("/post")
     public String getData(@RequestBody User receivedUser) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
