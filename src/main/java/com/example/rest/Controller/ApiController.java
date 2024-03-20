@@ -60,8 +60,8 @@ public class ApiController {
 
         try(Stream<String> lines = Files.lines(Paths.get("users.csv"))) {
             int countLines = (int) Files.lines(Paths.get("users.csv")).count();
-            int randomString = random.nextInt(1, countLines + 1);
-            readedString = lines.skip(randomString - 1).findFirst().get();
+            int randomString = random.nextInt(countLines);
+            readedString = lines.skip(randomString).findFirst().get();
         }
         return readedString;
     }
