@@ -48,25 +48,26 @@ public class ApiController {
 
         return objectMapper.writeValueAsString(user);
     }
-//    @GetMapping("/get/random")
-//    public String getRandomString() throws IOException, SQLException {
-//
-//        Random random = new Random();
-//        String readedString;
-//
-//        try(Stream<String> lines = Files.lines(Paths.get("users.csv"))) {
-//            int countLines = (int) Files.lines(Paths.get("users.csv")).count();
-//            if (countLines == 0) {
-//                return "file is empty";
-//            }
-//            int randomString = random.nextInt(1, countLines + 1);
-//            readedString = lines.skip(randomString - 1).findFirst().get();
-//        }
-//        return readedString;
-//    }
+    @GetMapping("/get/random")
+    public String getRandomString() throws IOException, SQLException {
+
+        Random random = new Random();
+        String readedString;
+
+        if(!(new File("users.csv").exists())) {
+            return "File is empty";
+        }
+
+        try(Stream<String> lines = Files.lines(Paths.get("users.csv"))) {
+            int countLines = (int) Files.lines(Paths.get("users.csv")).count();
+            int randomString = random.nextInt(1, countLines + 1);
+            readedString = lines.skip(randomString - 1).findFirst().get();
+        }
+        return readedString;
+    }
 
     @PostMapping("/post")
-    public String getData(@RequestBody User receivedUser) throws JsonProcessingException {
+    public String getData(@RequestBody User receivedUser) throws JsonProcessingException, SQLException {
         ObjectMapper objectMapper = new ObjectMapper();
 
         String login = receivedUser.getLogin();
@@ -84,14 +85,18 @@ public class ApiController {
         User user = new User(login, password, email);
 
         Date current = new Date();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         String date = dateFormat.format(current);
 
         user.setDate(date);
-
+        System.out.println(user);
         ClientDBFunctions userToDB = new ClientDBFunctions();
 
-        userToDB.insertUser(user);
+        int isAdded =  userToDB.insertUser(user);
+
+        if (isAdded == 0) {
+            return "User with such id already exists";
+        }
 
         return objectMapper.writeValueAsString(user);
     }

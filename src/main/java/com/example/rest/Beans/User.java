@@ -65,6 +65,7 @@ public class User {
         return "User{" +
                 "login='" + login + '\'' +
                 ", password='" + password + '\'' +
+                ", date='" + date + '\'' +
                 ", email='" + email + '\'' +
                 '}';
     }
