@@ -9,7 +9,7 @@ public Connection connectToDB(String dbName, String user, String password) {
     Connection conn = null;
     try {
 //            Class.forName("org.postgresql.Driver");
-        conn = DriverManager.getConnection("jdbc:postgresql://172.17.0.2:5432/" + dbName, user, password);
+        conn = DriverManager.getConnection("jdbc:postgresql://172.17.0.1:5432/" + dbName, user, password);
         if (conn != null) {
             System.out.println("Connection established");
         } else {
